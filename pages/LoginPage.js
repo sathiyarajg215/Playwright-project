@@ -1,31 +1,27 @@
-const env = require('../utils/env');
-
-exports.LoginPage = class LoginPage {
+class LoginPage {
   constructor(page) {
     this.page = page;
-    this.usernameInput = page.locator('#user-name');
-    this.passwordInput = page.locator('#password');
-    this.loginButton = page.locator('#login-button');
-    this.errorMessage = page.locator('[data-test="error"]');
+
+    this.usernameInput = page.getByTestId('username');
+    this.passwordInput = page.getByTestId('password');
+    this.loginButton = page.getByTestId('login-button');
+
+    this.errorMessage = page.getByTestId('error');
   }
 
-  async goto() {
-    await this.page.goto(env.baseUrl);
+  async open() {
+    await this.page.goto('/');
   }
 
-  async login(username = env.username, password = env.password) {
+  async login(username, password) {
     await this.usernameInput.fill(username);
     await this.passwordInput.fill(password);
     await this.loginButton.click();
   }
 
-//   async getErrorText() {
-//     return this.errorMessage.textContent();
-//   }
-
-  async verifyLoginSuccessful() {
-    // After successful login, SauceDemo redirects to /inventory.html
-    await this.page.waitForURL('**/inventory.html');
+  async expectLoginError() {
+    await this.errorMessage.waitFor();
   }
 }
 
+module.exports = LoginPage;

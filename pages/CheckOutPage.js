@@ -1,48 +1,43 @@
-const env = require('../utils/env');
-
-exports.CheckoutPage = class CheckoutPage {
-
+class CheckoutPage {
   constructor(page) {
-
     this.page = page;
 
-    // Checkout Step One - User Details
-    this.firstNameInput = page.locator('[data-test="firstName"]');
-    this.lastNameInput = page.locator('[data-test="lastName"]');
-    this.postalCodeInput = page.locator('[data-test="postalCode"]');
+    this.firstNameInput =
+      page.getByTestId('firstName');
 
-    // Buttons
-    this.continueButton = page.locator('[data-test="continue"]');
-    this.cancelButton = page.locator('[data-test="cancel"]');
+    this.lastNameInput =
+      page.getByTestId('lastName');
 
-    // Error message
-    this.errorMessage = page.locator('[data-test="error"]');
+    this.postalCodeInput =
+      page.getByTestId('postalCode');
+
+    this.continueButton =
+      page.getByTestId('continue');
+
+    this.finishButton =
+      page.getByTestId('finish');
+
+    this.completeHeader =
+      page.getByTestId('complete-header');
   }
 
-  async verifyOnCheckoutStepOne() {
-
-    await this.page.waitForURL('**/checkout-step-one.html');
-  }
-
-  async enterUserDetails({
-    firstName = env.checkoutFirstName,
-    lastName = env.checkoutLastName,
-    postalCode = env.checkoutPostalCode,
-  } = {}) {
-
+  async fillCustomerDetails(firstName, lastName, postalCode) {
     await this.firstNameInput.fill(firstName);
     await this.lastNameInput.fill(lastName);
     await this.postalCodeInput.fill(postalCode);
   }
 
   async continueToOverview() {
-
     await this.continueButton.click();
   }
 
-  async fillAndContinue(userDetails = {}) {
-
-    await this.enterUserDetails(userDetails);
-    await this.continueToOverview();
+  async finishOrder() {
+    await this.finishButton.click();
   }
-};
+
+  async expectOrderComplete() {
+    await this.completeHeader.waitFor();
+  }
+}
+
+module.exports = CheckoutPage;

@@ -1,0 +1,61 @@
+trigger:
+  - main
+
+pr:
+  - main
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+variables:
+  CI: 'true'
+  UI_BASE_URL: 'https://www.saucedemo.com'
+  API_BASE_URL: 'https://restful-booker.herokuapp.com'
+  SWAGLABS_USERNAME: 'standard_user'
+  SWAGLABS_PASSWORD: 'secret_sauce'
+  BOOKING_ID: '1'
+
+steps:
+
+  - task: NodeTool@0
+    displayName: 'Setup Node.js'
+    inputs:
+      versionSpec: '20.x'
+
+  - script: npm ci
+    displayName: 'Install dependencies'
+
+  - script: npx playwright install --with-deps chromium
+    displayName: 'Install Playwright Chromium'
+
+  - script: npm test
+    displayName: 'Run Playwright tests'
+    env:
+      UI_BASE_URL: $(UI_BASE_URL)
+      API_BASE_URL: $(API_BASE_URL)
+      SWAGLABS_USERNAME: $(SWAGLABS_USERNAME)
+      SWAGLABS_PASSWORD: $(SWAGLABS_PASSWORD)
+      BOOKING_ID: $(BOOKING_ID)
+
+  - task: PublishTestResults@2
+    displayName: 'Publish Playwright test results'
+    condition: succeededOrFailed()
+    inputs:
+      testResultsFormat: 'JUnit'
+      testResultsFiles: 'test-results/results.xml'
+      testRunTitle: 'Playwright Test Results'
+      failTaskOnFailedTests: false
+
+  - task: PublishPipelineArtifact@1
+    displayName: 'Publish Playwright HTML report'
+    condition: succeededOrFailed()
+    inputs:
+      targetPath: 'playwright-report'
+      artifact: 'playwright-report'
+
+  - task: PublishPipelineArtifact@1
+    displayName: 'Publish test artifacts'
+    condition: failed()
+    inputs:
+      targetPath: 'test-results'
+      artifact: 'test-results'
