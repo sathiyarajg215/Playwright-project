@@ -4,7 +4,7 @@ const { ApiHelper } = require('../api/apiHelper');
 // SauceDemo has no real backend API, so these are skipped by default.
 // Once you have a real API_BASE_URL in .env, remove `.skip` and adjust
 // the paths/assertions in api/apiHelper.js and below to match your API.
-test.describe.skip('API flow (enable once a real API_BASE_URL is set)', () => {
+test.describe('API flow (enable once a real API_BASE_URL is set)', () => {
   let api;
 
   test.beforeAll(async () => {
