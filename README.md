@@ -66,7 +66,7 @@ pages/
 - CheckoutPage.js
 
 config/
-- environments.js
+- environment.js
 
 .github/
 - workflows/
